@@ -1,0 +1,100 @@
+name: Falconer Comparator
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  comparator:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.8'
+
+      - name: Install pinned Lean toolchain
+        run: |
+          mkdir -p verification
+          curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o "$RUNNER_TEMP/elan-init.sh"
+          sh "$RUNNER_TEMP/elan-init.sh" -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          "$HOME/.elan/bin/elan" toolchain install "$(cat lean-toolchain)"
+
+      - name: Build pinned verification tools
+        run: |
+          set -o pipefail
+          bash scripts/setup-comparator.sh 2>&1 | tee verification/setup.log
+
+      - name: Download trusted Mathlib cache
+        run: |
+          set -o pipefail
+          lake exe cache get 2>&1 | tee verification/cache.log
+
+      - name: Verify sandbox and run Comparator
+        id: verify
+        run: |
+          sudo sysctl -w vm.max_map_count=1048576
+          uname -a | tee verification/environment.log
+          lean --version | tee -a verification/environment.log
+          systemd --version | head -1 | tee -a verification/environment.log
+          set +e
+          sudo systemd-run --wait --pipe --collect \
+            --uid="$(id -u)" --gid="$(id -g)" \
+            --property=NoNewPrivileges=yes \
+            --property=CapabilityBoundingSet= \
+            --property=RestrictAddressFamilies=~AF_UNIX \
+            --setenv="PATH=$PATH" --setenv="HOME=$HOME" \
+            --working-directory="$PWD" \
+            /bin/bash "$PWD/scripts/run-comparator-service.sh" \
+            2>&1 | tee verification/comparator.log
+          comparator_exit=${PIPESTATUS[0]}
+          set -e
+          python3 - "$comparator_exit" <<'PY'
+          import json, sys
+          from pathlib import Path
+          code = int(sys.argv[1])
+          log = Path('verification/comparator.log').read_text()
+          preflight = 'Security preflight passed:' in log
+          result = {
+              'stage': 'comparator' if preflight else 'security_preflight',
+              'exit_code': code,
+              'passed': preflight and code == 0,
+              'security_preflight_passed': preflight,
+          }
+          Path('verification/result.json').write_text(json.dumps(result, indent=2) + '\n')
+          PY
+          exit "$comparator_exit"
+
+      - name: Record incomplete verification
+        if: always()
+        env:
+          VERIFY_OUTCOME: ${{ steps.verify.outcome }}
+        run: |
+          mkdir -p verification
+          if [[ ! -f verification/result.json ]]; then
+            python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          Path('verification/result.json').write_text(json.dumps({
+              'stage': 'setup',
+              'passed': False,
+              'exit_code': None,
+              'verify_step_outcome': os.environ.get('VERIFY_OUTCOME', 'not_started'),
+          }, indent=2) + '\n')
+          PY
+          fi
+
+      - name: Upload verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: falconer-comparator-${{ github.run_id }}
+          path: verification/
