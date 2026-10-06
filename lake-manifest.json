@@ -111,7 +111,7 @@
       "configFile": "lakefile.toml"
     }
   ],
-  "name": "falconer-all-dimensions",
+  "name": "falconer_all_dimensions",
   "lakeDir": ".lake",
   "fixedToolchain": true
 }

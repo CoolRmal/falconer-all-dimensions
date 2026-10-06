@@ -1,5 +1,5 @@
 # Standalone extraction; Lean source files are unchanged from openai/math.
-name = "falconer-all-dimensions"
+name = "falconer_all_dimensions"
 version = "0.1.0"
 defaultTargets = ["OAI"]
 

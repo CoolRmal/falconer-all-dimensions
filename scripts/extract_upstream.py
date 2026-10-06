@@ -214,14 +214,14 @@ def main() -> None:
         "version": upstream_lake_manifest["version"],
         "packagesDir": upstream_lake_manifest["packagesDir"],
         "packages": selected_packages,
-        "name": "falconer-all-dimensions",
+        "name": "falconer_all_dimensions",
         "lakeDir": upstream_lake_manifest["lakeDir"],
         "fixedToolchain": upstream_lake_manifest["fixedToolchain"],
     }
     lake_manifest_text = json.dumps(lake_manifest, indent=2) + "\n"
     (destination / "lake-manifest.json").write_text(lake_manifest_text, encoding="utf-8")
     package = f'''# Standalone extraction; Lean source files are unchanged from openai/math.
-name = "falconer-all-dimensions"
+name = "falconer_all_dimensions"
 version = "0.1.0"
 defaultTargets = ["OAI"]
 
