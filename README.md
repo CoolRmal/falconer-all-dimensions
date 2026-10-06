@@ -30,6 +30,7 @@ lake exe cache get
 sudo systemd-run --wait --pipe --collect \
   --uid="$(id -u)" --gid="$(id -g)" \
   --property=NoNewPrivileges=yes --property=CapabilityBoundingSet= \
+  --property=SystemCallArchitectures=native \
   --property=RestrictAddressFamilies=~AF_UNIX \
   --setenv="PATH=$PATH" --setenv="HOME=$HOME" \
   --working-directory="$PWD" \
