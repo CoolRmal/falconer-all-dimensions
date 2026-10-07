@@ -4,6 +4,14 @@ This repository isolates the all-dimensional Falconer formalization from
 [openai/math](https://github.com/openai/math/tree/adc7f1241b42e322a6451854ab7e4b4c146bf78a).
 The copied Lean sources and Comparator challenge are unchanged.
 
+**Comparator passed on October 6, 2026.** The [Linux run](https://github.com/CoolRmal/falconer-all-dimensions/actions/runs/37545204340)
+verified commit `a90f416f1442400e9ccf85eb59bf11cf1888979b` and finished successfully.
+The log records `Lean default kernel accepts the solution` and `Your solution is okay!`.
+The real Landrun sandbox and additional Unix-socket restriction passed the security
+preflight. See the [saved log](verification-records/37545204340/comparator.log),
+[result](verification-records/37545204340/result.json), and
+[verification record](verification-records/37545204340/record.json).
+
 For every integer dimension at least two and every compact subset of Euclidean
 space, the theorem states:
 

@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-06",
+  "run_id": 37545204340,
+  "run_url": "https://github.com/CoolRmal/falconer-all-dimensions/actions/runs/37545204340",
+  "tested_commit": "a90f416f1442400e9ccf85eb59bf11cf1888979b",
+  "upstream_commit": "adc7f1241b42e322a6451854ab7e4b4c146bf78a",
+  "theorem": "OAI.Falconer.falconer_distance_conjecture",
+  "result": {
+    "stage": "comparator",
+    "exit_code": 0,
+    "passed": true,
+    "security_preflight_passed": true
+  },
+  "kernel": "Lean default kernel",
+  "external_kernels": [],
+  "toolchain": "leanprover/lean4:v4.34.1",
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
+  "definition_names": [],
+  "verification_tools": {
+    "comparator": "d03acab154d269c06e60e4de7e4cc85deebff94b",
+    "lean4export": "076e8e57707e813375e8f9da8bf989799ace9680",
+    "landrun": "811cfff51ceaf3d9843708aa6d22e9b84ccac8b4"
+  },
+  "copied_solution_modules": 2384,
+  "copied_source_files_verified": 2388,
+  "log_sha256": "a10087f2b8007272c645118ad85026cfe4ddaf3a5ff5ad18daa9e0511f587c7f",
+  "config_sha256": "8fe8bc0b1f99ebc0a9a02bf3e3de68ad560a65f78a452268c53bea776fdfd01a",
+  "workflow_conclusion": "success"
+}
